@@ -8,7 +8,6 @@ import {
   Button, 
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useNotes } from '../contexts/NotesContext';
 
@@ -19,18 +18,7 @@ const HomeScreen = () => {
   const handleCreate = () => {
     navigation.navigate('CreateNoteScreen')
   }
-
-  const handleDelete = async (id) => {
-    setNotes(prevNotes => 
-      prevNotes.filter(note => note.id !== id));
-
-    try {
-      await AsyncStorage.removeItem('encryptedNote');
-    } catch (error) {
-      console.log('Error removing data', error);
-    }
-  }
-
+  
   const renderItem = ({ item }) => {
     return (
       <View style={styles.noteContainer}>
@@ -41,11 +29,11 @@ const HomeScreen = () => {
         </View>
         <View style={styles.actionContainer}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('ViewNoteScreen', item)}
+            onPress={() => navigation.navigate('LoginScreen', item)}
           >
             <Text style={styles.viewText}>VIEW</Text>
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => navigation.navigate('EditNoteScreen', item)}
           >
             <Text style={styles.editText}>EDIT</Text>
@@ -54,7 +42,7 @@ const HomeScreen = () => {
             onPress={() => handleDelete(item.id)}
           >
             <Text style={styles.deleteText}>DELETE</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     );
@@ -92,8 +80,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
-    // alignSelf: 'flex-end',
-    // alignContent: 'flex-end',
     flex: 0.5,
   },
   noteTitle: {
@@ -120,7 +106,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 4,
     color: '#C0392B'
-  }
+  },
 });
 
 export default HomeScreen;
