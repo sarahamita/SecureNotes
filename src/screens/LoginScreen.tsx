@@ -10,16 +10,15 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics';
 
-const LoginScreen = () => {
+const LoginScreen = ({ route }) => {
   const navigation = useNavigation();
   const rnBiometrics = new ReactNativeBiometrics();
 
-  const [username, setUsername] = useState('username');
   const [password, setPassword] = useState('password');
 
   const handleLogin = () => {
-    if (username === 'username' && password === 'password') {
-      navigation.navigate('HomeScreen');
+    if (password === 'password') {
+      navigation.navigate('ViewNoteScreen', route.params);
     } else {
       Alert.alert('Invalid username or password');
     }
@@ -35,7 +34,7 @@ const LoginScreen = () => {
         });
 
         if (result.success) {
-          navigation.navigate('HomeScreen');
+          navigation.navigate('ViewNoteScreen');
         } else {
           Alert.alert('Authentication failed');
         }
@@ -49,13 +48,6 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Username</Text>
-      <TextInput
-        style={styles.input}
-        value={username}
-        onChangeText={setUsername}
-        placeholder="Enter username"
-      />
       <Text style={styles.label}>Password</Text>
       <TextInput
         style={styles.input}
