@@ -11,7 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useNotes } from '../contexts/NotesContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { encrypt, decrypt, encryptionKey } from '../lib/utils';
+import { encrypt, decrypt } from '../lib/utils';
 
 const EditNoteScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -24,18 +24,9 @@ const EditNoteScreen = ({ route }) => {
   const [decryptedTitle, setDecryptedTitle] = useState('');
   const [decryptedContent, setDecryptedContent] = useState('');
 
-  // const handleSave = () => {
-  //   setNotes(prevNotes =>
-  //     prevNotes.map(note =>
-  //       note.id === id ? { ...note, title, content } : note
-  //     )
-  //   );
-  //   navigation.goBack();
-  // };
-
   const handleSave = async () => {
-    if (title === "" || content === "") {
-      Alert.alert("Please enter values for both.");
+    if (title === title || content === content) {
+      Alert.alert("Please update values for both.");
       return;
     }
     try {
@@ -44,7 +35,8 @@ const EditNoteScreen = ({ route }) => {
       const data = { title: encryptedTitle, content: encryptedContent };
       const encryptedNote = { id: idNote, ...data};
 
-      setNotes(prevNotes => [...prevNotes, encryptedNote]); // Add the encrypted note to the notes state
+      // Add the encrypted note to the notes state
+      setNotes(prevNotes => [...prevNotes, encryptedNote]); 
 
       await AsyncStorage.setItem('encryptedNote', JSON.stringify(encryptedNote));
       navigation.goBack();
@@ -59,16 +51,12 @@ const EditNoteScreen = ({ route }) => {
       const encryptedValue = await AsyncStorage.getItem('encryptedNote');
       const decryptedObject = JSON.parse(encryptedValue);
 
-      console.log('cek decryptedObject', decryptedObject)
-
       if (encryptedValue !== null) {
         const decryptedTitle = await decrypt(decryptedObject.title);
         const decryptedContent = await decrypt(decryptedObject.content);
 
         setDecryptedTitle(decryptedTitle);
         setDecryptedContent(decryptedContent);
-
-        console.log("cek decrypt" + decryptedTitle + 'and' + decryptedContent);
       }
       else {
         console.log('data is does not exists');

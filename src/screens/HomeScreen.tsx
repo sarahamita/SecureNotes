@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { 
   View, 
   Text, 
@@ -6,19 +6,15 @@ import {
   StyleSheet, 
   TouchableOpacity,
   Button, 
-  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useNotes } from '../contexts/NotesContext';
-import { decrypt, encryptionKey } from '../lib/utils';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const { notes, setNotes } = useNotes();
-  const [decryptedTitle, setDecryptedTitle] = useState('');
-  const [decryptedContent, setDecryptedContent] = useState('');
   
   const handleCreate = () => {
     navigation.navigate('CreateNoteScreen')
@@ -30,49 +26,12 @@ const HomeScreen = () => {
 
     try {
       await AsyncStorage.removeItem('encryptedNote');
-      console.log('Data removed successfully');
     } catch (error) {
       console.log('Error removing data', error);
     }
   }
 
-  const fetchData = async () => {
-    try {
-      const encryptedValue = await AsyncStorage.getItem('encryptedNote');
-      const decryptedObject = JSON.parse(encryptedValue);
-
-      console.log('cek decryptedObject', decryptedObject)
-
-      if (encryptedValue !== null) {
-        const decryptedTitle = await decrypt(decryptedObject.title);
-        const decryptedContent = await decrypt(decryptedObject.content);
-
-        setDecryptedTitle(decryptedTitle);
-        setDecryptedContent(decryptedContent);
-
-        console.log("cek decrypt" + decryptedTitle + 'and' + decryptedContent);
-      }
-      else {
-        console.log('data is does not exists');
-      }
-    } catch (error) {
-      console.log('error while fetching data', error);
-    }
-  };
-
-  useEffect(() =>{
-    fetchData()
-  })
-
   const renderItem = ({ item }) => {
-    // console.log('cek item', item)
-    // const decryptedObject = JSON.parse(item);
-    // const titleDecrypted = await decrypt(decryptedObject.title);
-    // const contentDecrypted = await decrypt(decryptedObject.content);
-
-    // setDecryptedTitle(titleDecrypted);
-    // setDecryptedContent(contentDecrypted);
-
     return (
       <View style={styles.noteContainer}>
         <View style={styles.contentContainer}>
@@ -101,7 +60,6 @@ const HomeScreen = () => {
     );
   } 
     
-console.log('cek notes', notes)
   return (
     <View style={styles.container}>
       <Button title="Create Note" onPress={handleCreate} />

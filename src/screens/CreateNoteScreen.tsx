@@ -11,7 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useNotes } from '../contexts/NotesContext';
-import { generateRandomString, encrypt, encryptionKey } from '../lib/utils';
+import { generateRandomString, encrypt } from '../lib/utils';
 
 const CreateNoteScreen = () => {
   const navigation = useNavigation();
@@ -21,23 +21,6 @@ const CreateNoteScreen = () => {
   const { notes, setNotes } = useNotes();
 
   const randomId = generateRandomString(8);
-  const noteEncryptionKey = generateRandomString(16);
-
-  // const handleSave = () => {
-  //   setNotes(prevNotes => [...prevNotes, { id: randomId, title: title, content: content }]);
-  //   navigation.goBack();
-  // };
-
-  // const handleSave = () => {
-  //   const encryptedNote = encryptNote(
-  //     { id: randomId, title: title, content: content }, // Single note object
-  //     noteEncryptionKey
-  //   );
-  //   console.log('cek apa', encryptedNote)
-  
-  //   setNotes(prevNotes => [...prevNotes, { id: randomId, title: title, content: content }]); // Add the encrypted note to the notes state
-  //   navigation.goBack();
-  // };
 
   const handleSave = async () => {
     if (title === "" || content === "") {
@@ -50,11 +33,11 @@ const CreateNoteScreen = () => {
       const data = { title: encryptedTitle, content: encryptedContent };
       const encryptedNote = { id: randomId, ...data};
 
-      setNotes(prevNotes => [...prevNotes, encryptedNote]); // Add the encrypted note to the notes state
+      // Add the encrypted note to the notes state
+      setNotes(prevNotes => [...prevNotes, encryptedNote]); 
 
       await AsyncStorage.setItem('encryptedNote', JSON.stringify(encryptedNote));
       navigation.goBack();
-      console.log('note successfully stored')
     } catch (error) {
       console.log('error storing data', error);
     }
