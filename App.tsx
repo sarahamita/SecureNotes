@@ -12,28 +12,17 @@ import { NotesProvider } from './src/contexts/NotesContext';
 const Stack = createNativeStackNavigator();
 
 const App = () => {
-  const navigationRef = useNavigationContainerRef();
-
-  const linking = {
-    prefixes: ['https://mynotes.com', 'mynotes://'],
-    config: {
-      screens: {
-        Home: 'feed/:sort',
-      },
-    },
-  };
-
   return (
     <NotesProvider>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
-            name={'LoginScreen'}
-            component={LoginScreen}
-          />
-          <Stack.Screen
             name={'HomeScreen'}
             component={HomeScreen}
+          />
+          <Stack.Screen
+            name={'LoginScreen'}
+            component={LoginScreen}
           />
           <Stack.Screen
             name={'EditNoteScreen'}
