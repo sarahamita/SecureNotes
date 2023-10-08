@@ -14,10 +14,10 @@ import { useNotes } from '../contexts/NotesContext';
 const ViewNoteScreen = ({ route }) => {
   const navigation = useNavigation();
 
-  const { title: initialTitle, content: initialContent } = route.params;
-  console.log('cek route view', route)
+  const { id: initialId, title: initialTitle, content: initialContent } = route.params;
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
+  const [id, setId] = useState(initialId);
   const { notes, setNotes } = useNotes();
 
   const [decryptedTitle, setDecryptedTitle] = useState('');
@@ -47,13 +47,12 @@ const ViewNoteScreen = ({ route }) => {
     fetchData()
   })
 
-  const handleDelete = async ({ id }) => {
-
-    setNotes(prevNotes => 
-      prevNotes.filter(note => note.id !== id));
+  const handleDelete = async (id) => {
+    setNotes(prevNotes => prevNotes.filter(note => note.id !== id));
 
     try {
       await AsyncStorage.removeItem('encryptedNote');
+      navigation.navigate('HomeScreen')
     } catch (error) {
       console.log('Error removing data', error);
     }
@@ -77,7 +76,7 @@ const ViewNoteScreen = ({ route }) => {
           <Text style={styles.editText}>EDIT</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => handleDelete(route.params.id)}
+          onPress={() => handleDelete(id)}
         >
           <Text style={styles.deleteText}>DELETE</Text>
         </TouchableOpacity>
