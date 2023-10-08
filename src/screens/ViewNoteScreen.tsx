@@ -2,15 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
-  StyleSheet 
+  StyleSheet,
+  TouchableOpacity, 
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { decrypt, encryptionKey } from '../lib/utils';
+import { decrypt } from '../lib/utils'
+import { useNotes } from '../contexts/NotesContext';
+;
 const ViewNoteScreen = ({ route }) => {
+  const navigation = useNavigation();
+
   const { title: initialTitle, content: initialContent } = route.params;
+  console.log('cek route view', route)
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
+  const { notes, setNotes } = useNotes();
 
   const [decryptedTitle, setDecryptedTitle] = useState('');
   const [decryptedContent, setDecryptedContent] = useState('');
@@ -39,6 +47,19 @@ const ViewNoteScreen = ({ route }) => {
     fetchData()
   })
 
+  const handleDelete = async ({ id }) => {
+
+    setNotes(prevNotes => 
+      prevNotes.filter(note => note.id !== id));
+
+    try {
+      await AsyncStorage.removeItem('encryptedNote');
+    } catch (error) {
+      console.log('Error removing data', error);
+    }
+  }
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.titleText}>Title</Text>
@@ -48,6 +69,18 @@ const ViewNoteScreen = ({ route }) => {
       <Text style={styles.titleText}>Description</Text>
       <View style={styles.textarea}>
         <Text>{decryptedContent}</Text>
+      </View>
+      <View style={styles.actionContainer}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('EditNoteScreen', route.params)}
+        >
+          <Text style={styles.editText}>EDIT</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => handleDelete(route.params.id)}
+        >
+          <Text style={styles.deleteText}>DELETE</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -77,6 +110,31 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     padding: 8,
     backgroundColor: 'snow',
+  },
+  actionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    flex: 0.5,
+  },
+  viewText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 4,
+    color: '#4287f5',
+    marginRight: 10,
+  },
+  editText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 4,
+    color: '#fcba03',
+    marginRight: 10,
+  },
+  deleteText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 4,
+    color: '#C0392B'
   },
 });
 
